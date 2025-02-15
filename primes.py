@@ -1,4 +1,3 @@
-from time import time
 from math import ceil, log
 from Prime import Prime
 
@@ -51,20 +50,13 @@ def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
             return min, min
         return min-jump+1, min-1
 
-    
-
-
-
 def binarySearch(list: list[Prime], low: int, high: int, x: int):
     while low <= high:
         mid = low + (high - low) // 2
-        # Check if x is present at mid
         if list[mid]._comp == x:
             return mid
-        # If x is greater, ignore left half
         elif list[mid]._comp > x:
             low = mid + 1
-        # If x is smaller, ignore right half
         else:
             high = mid - 1
     return low
