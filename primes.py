@@ -15,7 +15,9 @@ def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
     low, high = predictRange(list, p, 16)
     if low != high:
         index = binarySearch(list, low, high, p._comp)
-    list.insert(index, p)
+        list.insert(index, p)
+    else:
+        list.insert(low, p)
     return list
 
 def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
@@ -65,7 +67,7 @@ def binarySearch(list: list[Prime], low: int, high: int, x: int):
         # If x is smaller, ignore right half
         else:
             high = mid - 1
-    return mid
+    return low
 
 if __name__ == "__main__":
     # Start with 3 in the primes list
@@ -73,7 +75,7 @@ if __name__ == "__main__":
     primes = [Prime(3, 9)]
 
     # The largest number you want to calculate to
-    max = 1000000
+    max = 10000
 
     f = open("primes.txt", "w")
     f.write("2\n")
@@ -82,14 +84,18 @@ if __name__ == "__main__":
         more = True
         foundFactor = False
 
+        #print(*primes)
         # Using 'more' for loop control allows us to find multiple prime factors per number
         while more:
             if num == primes[-1]._comp: # NOT PRIME
+                #print(f"{num} IS NOT PRIME")
+                #print(f"Found factor {primes[-1]}")
                 primes[-1].add_comp()
                 p = primes.pop()
                 primes = movePrime(primes, p)
                 foundFactor = True
             elif not foundFactor: # PRIME
+                #print(f"{num} IS PRIME")
                 f.write(f"{num}\n")
                 primes.insert(0, Prime(num, 3*num))
                 more = False
