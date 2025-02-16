@@ -12,48 +12,50 @@ def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
                 list.insert(0, p)
         return list
     
-    low, high = predictRange(list, p, 16)
-    if low != high:
-        index = binarySearch(list, low, high, p._comp)
-        list.insert(index, p)
-    else:
-        list.insert(low, p)
+    # low, high = predictRange(list, p, 64)
+    low, high = predictRange(list, p, 64)
+    #print(f"For prime {p}:")
+    #print(f"Predicted value: {len(list)-ceil(0.5*p._prime/log(p._prime))-ceil(p._prime*(log(log(list[0]._prime))-log(log(p._prime))))}")
+    index = binarySearch(list, 0, len(list)-1, p._comp)
+    #print(f"Actual value: {index}\n\n")
+    list.insert(index, p)
+
     return list
 
+
+#lmao worth a shot, makes it take longer tho
+#idea was to get a much closer range using #primes ~= p/log(p), predicting a sum of inverse primes would maybe make this faster
+#log(log(max))-log(log(p))? log(log(max)/log(p))? (using integration and prime density)
+
 def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
-    prime = p._prime
     comp = p._comp
     max = len(li)-1
-    min = max-ceil(0.5*prime/log(prime))
-    if min < 0:
-        min = 0
-    elif min > max:
-        min = max
+    guess = max-ceil(0.5*p._prime/log(p._prime))-ceil(p._prime*(log(log(li[0]._prime))-log(log(p._prime))))
+    if guess < 0:
+        guess = 0
+    elif guess > max:
+        guess = max
 
-    if li[min]._comp == comp:
-        return min, min
+    if li[guess]._comp == comp:
+        return guess, guess
     
-    elif li[min]._comp < comp:
-        while li[min]._comp < comp:
-            if min-jump <=0:
-                return 0, min
-            min -= jump
-        if li[min]._comp == comp:
-            return min, min
-        return min+1, min+jump-1
+    elif li[guess]._comp < comp:
+        while li[guess]._comp < comp:
+            if guess-jump <=0:
+                return 0, guess
+            guess -= jump
+        if li[guess]._comp == comp:
+            return guess, guess
+        return guess+1, guess+jump-1
     
     else:
-        while li[min]._comp > comp:
-            if min+jump>=max:
-                return min, max
-            min+=jump
-        if li[min]._comp == comp:
-            return min, min
-        return min-jump+1, min-1
-
-    
-
-
+        while li[guess]._comp > comp:
+            if guess+jump>=max:
+                return guess, max
+            guess+=jump
+        if li[guess]._comp == comp:
+            return guess, guess
+        return guess-jump+1, guess-1
 
 def binarySearch(list: list[Prime], low: int, high: int, x: int):
     while low <= high:
@@ -75,15 +77,19 @@ if __name__ == "__main__":
     primes = [Prime(3, 9)]
 
     # The largest number you want to calculate to
-    max = 10000
+    max = 10000000
+    jump = 16
 
     f = open("primes.txt", "w")
     f.write("2\n")
+    t = time()
 
     for num in range(5, max+1, 2): 
         more = True
         foundFactor = False
-
+        if num//jump > 50:
+            jump *=2
+        
         #print(*primes)
         # Using 'more' for loop control allows us to find multiple prime factors per number
         while more:
@@ -101,3 +107,5 @@ if __name__ == "__main__":
                 more = False
             else: # NO MORE PRIME FACTORS
                 more = False
+    
+    print(f"Ran in {time()-t} seconds")
