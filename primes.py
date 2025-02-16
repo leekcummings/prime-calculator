@@ -1,7 +1,9 @@
+from time import time
 from math import ceil, log
 from Prime import Prime
 
 def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
+    # For smaller primes, don't use binary search to save time
     if p._prime < 40:
         for i in reversed(range(len(list))):
             if list[i]._comp > p._comp:
@@ -11,45 +13,44 @@ def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
                 list.insert(0, p)
         return list
     
-    low, high = predictRange(list, p, 16)
-    if low != high:
-        index = binarySearch(list, low, high, p._comp)
-        list.insert(index, p)
-    else:
-        list.insert(low, p)
-    return list
+    index = binarySearch(list, 0, len(list)-1-ceil(0.5*p._prime/log(p._prime)), p._comp)
+    return list.insert(index, p)
 
-def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
-    prime = p._prime
-    comp = p._comp
-    max = len(li)-1
-    min = max-ceil(0.5*prime/log(prime))
-    if min < 0:
-        min = 0
-    elif min > max:
-        min = max
+# @cmfeltgood Search Prediction Code
+# Commented out because it's the same speed as binary search
 
-    if li[min]._comp == comp:
-        return min, min
+# def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
+#     prime = p._prime
+#     comp = p._comp
+#     max = len(li)-1
+#     min = max-ceil(0.5*prime/log(prime))
+#     if min < 0:
+#         min = 0
+#     elif min > max:
+#         min = max
+
+#     if li[min]._comp == comp:
+#         return min, min
     
-    elif li[min]._comp < comp:
-        while li[min]._comp < comp:
-            if min-jump <=0:
-                return 0, min
-            min -= jump
-        if li[min]._comp == comp:
-            return min, min
-        return min+1, min+jump-1
+#     elif li[min]._comp < comp:
+#         while li[min]._comp < comp:
+#             if min-jump <=0:
+#                 return 0, min
+#             min -= jump
+#         if li[min]._comp == comp:
+#             return min, min
+#         return min+1, min+jump-1
     
-    else:
-        while li[min]._comp > comp:
-            if min+jump>=max:
-                return min, max
-            min+=jump
-        if li[min]._comp == comp:
-            return min, min
-        return min-jump+1, min-1
+#     else:
+#         while li[min]._comp > comp:
+#             if min+jump>=max:
+#                 return min, max
+#             min+=jump
+#         if li[min]._comp == comp:
+#             return min, min
+#         return min-jump+1, min-1
 
+# https://www.geeksforgeeks.org/binary-search/
 def binarySearch(list: list[Prime], low: int, high: int, x: int):
     while low <= high:
         mid = low + (high - low) // 2
@@ -67,11 +68,13 @@ if __name__ == "__main__":
     primes = [Prime(3, 9)]
 
     # The largest number you want to calculate to
-    max = 10000
+    max = 1000000
 
     f = open("primes.txt", "w")
     f.write("2\n")
 
+    start = time()
+    
     for num in range(5, max+1, 2): 
         more = True
         foundFactor = False
@@ -93,3 +96,5 @@ if __name__ == "__main__":
                 more = False
             else: # NO MORE PRIME FACTORS
                 more = False
+
+    print(time()-start)
