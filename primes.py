@@ -12,45 +12,10 @@ def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
             elif list[i] == list[0]:
                 list.insert(0, p)
         return list
-    
+   
     index = binarySearch(list, 0, len(list)-1-ceil(0.5*p._prime/log(p._prime)), p._comp)
     return list.insert(index, p)
 
-# @cmfeltgood Search Prediction Code
-# Commented out because it's the same speed as binary search
-
-# def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
-#     prime = p._prime
-#     comp = p._comp
-#     max = len(li)-1
-#     min = max-ceil(0.5*prime/log(prime))
-#     if min < 0:
-#         min = 0
-#     elif min > max:
-#         min = max
-
-#     if li[min]._comp == comp:
-#         return min, min
-    
-#     elif li[min]._comp < comp:
-#         while li[min]._comp < comp:
-#             if min-jump <=0:
-#                 return 0, min
-#             min -= jump
-#         if li[min]._comp == comp:
-#             return min, min
-#         return min+1, min+jump-1
-    
-#     else:
-#         while li[min]._comp > comp:
-#             if min+jump>=max:
-#                 return min, max
-#             min+=jump
-#         if li[min]._comp == comp:
-#             return min, min
-#         return min-jump+1, min-1
-
-# https://www.geeksforgeeks.org/binary-search/
 def binarySearch(list: list[Prime], low: int, high: int, x: int):
     while low <= high:
         mid = low + (high - low) // 2
@@ -72,13 +37,14 @@ if __name__ == "__main__":
 
     f = open("primes.txt", "w")
     f.write("2\n")
+    t = time()
 
     start = time()
     
     for num in range(5, max+1, 2): 
         more = True
         foundFactor = False
-
+        
         #print(*primes)
         # Using 'more' for loop control allows us to find multiple prime factors per number
         while more:
@@ -92,9 +58,8 @@ if __name__ == "__main__":
             elif not foundFactor: # PRIME
                 #print(f"{num} IS PRIME")
                 f.write(f"{num}\n")
-                primes.insert(0, Prime(num, 3*num))
+                primes.insert(0, Prime(num, num**2))
                 more = False
             else: # NO MORE PRIME FACTORS
                 more = False
-
-    print(time()-start)
+    print(f"Ran in {time()-t} seconds")
