@@ -3,6 +3,7 @@ from math import ceil, log
 from Prime import Prime
 
 def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
+    # For smaller primes, don't use binary search to save time
     if p._prime < 40:
         for i in reversed(range(len(list))):
             if list[i]._comp > p._comp:
@@ -11,20 +12,17 @@ def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
             elif list[i] == list[0]:
                 list.insert(0, p)
         return list
-    index = binarySearch(list, 0, len(list)-1, p._comp)
-    list.insert(index, p)
-    return list
+   
+    index = binarySearch(list, 0, len(list)-1-ceil(0.5*p._prime/log(p._prime)), p._comp)
+    return list.insert(index, p)
 
 def binarySearch(list: list[Prime], low: int, high: int, x: int):
     while low <= high:
         mid = low + (high - low) // 2
-        # Check if x is present at mid
         if list[mid]._comp == x:
             return mid
-        # If x is greater, ignore left half
         elif list[mid]._comp > x:
             low = mid + 1
-        # If x is smaller, ignore right half
         else:
             high = mid - 1
     return low
@@ -41,6 +39,8 @@ if __name__ == "__main__":
     f.write("2\n")
     t = time()
 
+    start = time()
+    
     for num in range(5, max+1, 2): 
         more = True
         foundFactor = False
@@ -62,5 +62,4 @@ if __name__ == "__main__":
                 more = False
             else: # NO MORE PRIME FACTORS
                 more = False
-    
     print(f"Ran in {time()-t} seconds")
