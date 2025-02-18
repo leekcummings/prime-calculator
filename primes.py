@@ -1,5 +1,4 @@
 from time import time
-from math import ceil, log
 from Prime import Prime
 
 def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
@@ -13,8 +12,12 @@ def movePrime(list: list[Prime], p: Prime) -> list[Prime]:
                 list.insert(0, p)
         return list
    
-    index = binarySearch(list, 0, len(list)-1-ceil(0.5*p._prime/log(p._prime)), p._comp)
-    return list.insert(index, p)
+    index = binarySearch(list, 0, len(primes)-1, p._comp)
+    # my guess is that this is the problem i was worried about: 
+    # the prime prediction thingy isn't a solid lower bound, and it finally missed, causing the binary search to go out of bounds, returning none for the insert
+    
+    list.insert(index, p)
+    return list
 
 def binarySearch(list: list[Prime], low: int, high: int, x: int):
     while low <= high:
@@ -33,7 +36,7 @@ if __name__ == "__main__":
     primes = [Prime(3, 9)]
 
     # The largest number you want to calculate to
-    max = 1000000
+    max = 10000
 
     f = open("primes.txt", "w")
     f.write("2\n")
