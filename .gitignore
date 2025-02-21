@@ -1,2 +1,4 @@
 __pycache__/
-primes.txt
+
+# Exported Prime objects
+primes_*.csv

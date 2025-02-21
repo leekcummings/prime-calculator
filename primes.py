@@ -1,6 +1,7 @@
 from time import time
 from Prime import Prime
 from threading import Thread
+from readWrite import importOptions, importCSV, exportPrimes
 
 
 def sortPrimes(li: list[Prime], byComp: bool = False)->list[Prime]:
@@ -152,47 +153,52 @@ def bSearchThread(list: list[Prime], low: int, high: int, X: list[int], found: l
 
 
 if __name__ == "__main__":
-    # Start with 3 in the primes list
-    # Skip 2 because we're skipping all even numbers
-    primes = [Prime(3, 9)]
+    # Option to import previous prime values
+    importPath = importOptions()
+    if importPath != None:
+        # Prime calculating range will begin at the max of file range
+        lowRange = int(importPath.split("_")[1].split(".")[0])
+        # If even, make odd so we can skip evens later
+        if lowRange % 2 == 0:
+            lowRange += 1
+        primes = importCSV(importPath)
+    else:
+        # Start with 3 in the primes listaskImport
+        # Skip 2 because we're skipping all even numbers
+        primes = [Prime(3, 9)]
+        lowRange = 5
 
     # The largest number you want to calculate to
-    max = 1000000
-
-    f = open("primes.txt", "w")
-    f.write("2\n")
-    t = time()
-
+    max = 3000000
     start = time()
-    
-    for num in range(5, max+1, 2): 
-        more = True
-        foundFactor = False
-        
-        #print(*primes)
-        # Using 'more' for loop control allows us to find multiple prime factors per number
-        while more:
+    try:
+        for num in range(lowRange, max, 2): 
+            more = True
+            foundFactor = False
             toBeMoved: list[Prime] = [] #list of primes that need moved back into the list
-
-            if num == primes[-1]._comp: # NOT PRIME
-                #print(f"{num} IS NOT PRIME")
-                #print(f"Found factor {primes[-1]}")
-                primes[-1].add_comp()
-                toBeMoved.append(primes.pop())
-                #primes = movePrime(primes, p)
-                foundFactor = True
-
-            elif not foundFactor: # PRIME
-                #print(f"{num} IS PRIME")
-                f.write(f"{num}\n")
-                primes.insert(0, Prime(num, num**2))
-                more = False
-
-            else: # NO MORE PRIME FACTORS
-                more = False
             
+            # Using 'more' for loop control allows us to find multiple prime factors per number
+            while more:
+                if num == primes[-1]._comp: # NOT PRIME
+                    primes[-1].add_comp()
+                    toBeMoved.append(primes.pop())
+                    # p = primes.pop()
+                    # primes = movePrime(primes, p)
+                    foundFactor = True
+                elif not foundFactor: # PRIME
+                    # f.write(f"{num}\n")
+                    primes.insert(0, Prime(num, num**2))
+                    more = False
+                else: # NO MORE PRIME FACTORS
+                    more = False
+
+            #Insert increased composites back into the list
             if len(toBeMoved) == 1:
                 primes = movePrime(primes, toBeMoved[0])
             elif len(toBeMoved) > 1:
                 primes = movePrimes(primes, toBeMoved)
-    print(f"Ran in {time()-t} seconds")
+
+        print(f"Ran in {time()-start} seconds")
+    except KeyboardInterrupt:
+        print("\nSearch interrupted...")
+    exportPrimes(primes, num)
