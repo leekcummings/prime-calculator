@@ -186,15 +186,15 @@ if __name__ == "__main__":
         for num in range(lowRange, max, 2): 
             more = True
             foundFactor = False
-            toBeMoved: list[Prime] = [] #list of primes that need moved back into the list
+            # toBeMoved: list[Prime] = [] #list of primes that need moved back into the list NOTE: to be re-implemented
             
             # Using 'more' for loop control allows us to find multiple prime factors per number
             while more:
                 if num == primes[-1]._comp: # NOT PRIME
                     primes[-1].add_comp()
-                    toBeMoved.append(primes.pop())
-                    # p = primes.pop()
-                    # primes = movePrime(primes, p)
+                    # toBeMoved.append(primes.pop()) # for multi-searching NOTE: to be re-implemented
+                    p = primes.pop()
+                    primes = movePrime(primes, p)
                     foundFactor = True
                 elif not foundFactor: # PRIME
                     # f.write(f"{num}\n")
@@ -203,11 +203,11 @@ if __name__ == "__main__":
                 else: # NO MORE PRIME FACTORS
                     more = False
 
-            #Insert increased composites back into the list
-            if len(toBeMoved) == 1:
-                primes = movePrime(primes, toBeMoved[0])
-            elif len(toBeMoved) > 1:
-                primes = movePrimes(primes, toBeMoved)
+            #Insert increased composites back into the list NOTE: to be re-implemented
+            # if len(toBeMoved) == 1:
+            #     primes = movePrime(primes, toBeMoved[0])
+            # elif len(toBeMoved) > 1:
+            #     primes = movePrimes(primes, toBeMoved)
 
         print(f"Ran in {time()-start} seconds")
     except KeyboardInterrupt:
