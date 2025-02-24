@@ -4,11 +4,11 @@ from threading import Thread
 from readWrite import importOptions, importCSV, exportPrimes
 
 
-def sortPrimes(li: list[Prime], byComp: bool = False)->list[Prime]:
+def sortPrimes(li: list[Prime], byComp: bool = False, reverse=False)->list[Prime]:
     if byComp:
-        li.sort(key=lambda p : p._comp)
+        li.sort(key=lambda p : p._comp, reverse=reverse)
     else:
-        li.sort(key=lambda p : p._prime)
+        li.sort(key=lambda p : p._prime, reverse=reverse)
     
     return li
     
@@ -66,15 +66,19 @@ def movePrimes(li: list[Prime], primes: list[Prime]) -> list[Prime]:
     if len(needBinary) != 0:
 
         #Sort primes for efficient inserts
-        sortPrimes(needBinary, True)
+        sortPrimes(needBinary, True, False)
 
         #send composites into function
         nbComps = [p._comp for p in needBinary]
         inds = binarySearchMany(li, 0, len(li)-1, nbComps)
         
         #do the insert
-        for i in range(len(inds)-1, -1, -1):
+        #print(inds)
+        for i in range(len(inds)):
             li.insert(inds[i], needBinary[i])
+        
+        #print(*[p._comp for p in needBinary])
+        #print(*[p._comp for p in li])
     
     return li
         
@@ -93,13 +97,18 @@ def binarySearchMany(list: list[Prime], low: int, high: int, X: list[int]):
 def bSearchThread(list: list[Prime], low: int, high: int, X: list[int], found: list[int]):
     """Threading function for Binary Search"""
     #Add checking once list gets too narrow
-    if low < high:
-        for i in range(len(X)):
-            if list[low] == X[i]:
-                found[i] = low
-            elif list[high] > X[i] and list[low] < X[i]:
-                found[i] = low
-        
+    #print(low, high)
+
+    for i in range(len(X)):
+        if list[low]._comp == X[i]:
+            found[i] = low
+        elif list[low-1]._comp > X[i] and list[low]._comp < X[i]:
+            found[i] = low
+        elif list[high]._comp > X[i] and list[high+1]._comp < X[i]:
+            found[i] = high+1
+
+
+    if low >= high:       
         return None
 
 
@@ -149,6 +158,8 @@ def bSearchThread(list: list[Prime], low: int, high: int, X: list[int], found: l
         right = Thread(target=bSearchThread, args = (list, mid+1, high, X, found))
         right.start()
         right.join()
+    
+    return None
 
 
 
