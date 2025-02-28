@@ -1,9 +1,15 @@
-from Prime import Prime
-from math import ceil, log
+# ---------------------------------------------------------------------------- #
+#                    Index prediction using ~fancy calculus~                   #
+# ---------------------------------------------------------------------------- #
+
+# ----------------------------------- Notes ---------------------------------- #
 
 #lmao worth a shot, makes it take longer tho
 #idea was to get a much closer range using #primes ~= p/log(p), predicting a sum of inverse primes would maybe make this faster
 #log(log(max))-log(log(p))? log(log(max)/log(p))? (using integration and prime density)
+
+from Prime import Prime
+from math import ceil, log
 
 def predictRange(li: list[Prime], p:Prime, jump:int)->tuple[int, int]:
     comp = p._comp
